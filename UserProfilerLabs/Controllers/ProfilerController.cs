@@ -17,9 +17,10 @@ namespace UserProfilerLab.Controllers
             return View();
         }
 
+        private string userName = "Kim2";
         public ActionResult EditProfile()
         {
-            ProfileBase _userProfile = ProfileBase.Create(HttpContext.User.Identity.Name);
+            ProfileBase _userProfile = ProfileBase.Create(userName);
             ProfileModel _profile = new ProfileModel();
             if (_userProfile.LastUpdatedDate > DateTime.MinValue)
             {
@@ -28,6 +29,8 @@ namespace UserProfilerLab.Controllers
                 _profile.Gender = Convert.ToString(_userProfile.GetPropertyValue("Gender"));
                 _profile.MobileNo = Convert.ToString(_userProfile.GetProfileGroup("Contact").GetPropertyValue("MobileNo"));
                 _profile.EmailAddress = Convert.ToString(_userProfile.GetProfileGroup("Contact").GetPropertyValue("EmailAddress"));
+                // UserCondition userCondition = (UserCondition)_userProfile.GetPropertyValue("UserCondition");
+                //UserCollection list = (UserCollection)_userProfile.GetPropertyValue("UserCollection");
             }
             return View(_profile);
         }
@@ -38,8 +41,8 @@ namespace UserProfilerLab.Controllers
             if (ModelState.IsValid)
             {
                 // Attempt to register the user profile
-                System.Web.Profile.ProfileBase profile = System.Web.Profile.ProfileBase.Create(User.Identity.Name, true);
-                
+                System.Web.Profile.ProfileBase profile = System.Web.Profile.ProfileBase.Create(userName, true);
+
                 if (profile != null)
                 {
                     profile.SetPropertyValue("Gender", model.Gender);
@@ -47,14 +50,35 @@ namespace UserProfilerLab.Controllers
                     profile.SetPropertyValue("LastName", model.LastName);
                     profile.GetProfileGroup("Contact").SetPropertyValue("MobileNo", model.MobileNo);
                     profile.GetProfileGroup("Contact").SetPropertyValue("EmailAddress", model.EmailAddress);
+
+                    //var condition = new UserCondition
+                    //{
+                    //    Gender = model.Gender,
+                    //    ForeNames = model.ForeNames
+                    //    ,
+                    //    LastName = model.LastName,
+                    //    MobileNo = model.MobileNo,
+                    //    EmailAddress = model.EmailAddress
+                    //};
+
+                    //  profile.SetPropertyValue("UserCondition", condition);
+                    //var list = new UserCollection();
+                    //for (int i = 0; i < 10; i++)
+                    //{
+                    //    list.Add(condition);
+                    //}
+                    // profile.SetPropertyValue("UserCollection", list);
+
                     profile.Save();
                 }
                 else
                 {
                     ModelState.AddModelError("", "Error writing to Profile");
                 }
+
+
             }
             return View(model);
         }
-	}
+    }
 }
